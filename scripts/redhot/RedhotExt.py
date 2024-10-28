@@ -1,15 +1,12 @@
-op("td_pip").PrepareModule("maturin_import_hook")
+import os
+from pathlib import Path
 import logging
 
 logging.basicConfig(format="%(name)s [%(levelname)s] %(message)s", level=logging.DEBUG)
-import sys
-from pathlib import Path
-from maturin_import_hook.project_importer import MaturinProjectImporter
+op("td_pip").PrepareModule("maturin_import_hook")
+import maturin_import_hook
 
-
-class CustomImporter(MaturinProjectImporter):
-    def find_maturin(self) -> Path:
-        return Path(".venv/bin/maturin").resolve()
+maturin_import_hook.reset_logger()
 
 
 CustomParHelper: CustomParHelper = (
@@ -35,14 +32,22 @@ class RedhotExt:
 
     @staticmethod
     def InstallHook():
-        import maturin_import_hook
-
-        maturin_import_hook.reset_logger()
-        importer = CustomImporter(
-            enable_reloading=True,
+        RedhotExt.addPathEntries()
+        maturin_import_hook.install(
             enable_automatic_installation=True,
+            enable_project_importer=True,
+            enable_reloading=True,
         )
-        sys.meta_path.insert(0, importer)
+
+    @staticmethod
+    def addPathEntries():
+        path = os.environ["PATH"]
+        cargo_bin = Path.home() / ".cargo" / "bin"
+        venv_bin = Path(".venv/bin").resolve()
+        if str(cargo_bin) not in path:
+            os.environ["PATH"] += f":{cargo_bin}"
+        if str(venv_bin) not in path:
+            os.environ["PATH"] += f":{venv_bin}"
 
     @staticmethod
     def UninstallHook():
