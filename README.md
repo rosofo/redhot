@@ -9,6 +9,7 @@ Let's assume you've got:
 - A TouchDesigner project with a project folder
 - A Python venv under `$PROJECT/.venv`
 - A Rust installation
+- You are on MacOS (untested on Windows but feel free and lmk!)
 
 And you want:
 
