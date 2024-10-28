@@ -1,6 +1,9 @@
 import os
 from pathlib import Path
 import logging
+import sys
+from typing import ClassVar
+from TDStoreTools import StorageManager
 
 logging.basicConfig(format="%(name)s [%(levelname)s] %(message)s", level=logging.DEBUG)
 op("td_pip").PrepareModule("maturin_import_hook")
@@ -29,10 +32,11 @@ class RedhotExt:
         NoNode.Init(
             enable_chopexec=False, enable_datexec=False, enable_keyboard_shortcuts=False
         )
+        self.addPathEntries()
+        self.addVenvToPythonPath()
+        self.InstallHook()
 
-    @staticmethod
-    def InstallHook():
-        RedhotExt.addPathEntries()
+    def InstallHook(self):
         maturin_import_hook.install(
             enable_automatic_installation=True,
             enable_project_importer=True,
@@ -48,6 +52,12 @@ class RedhotExt:
             os.environ["PATH"] += f":{cargo_bin}"
         if str(venv_bin) not in path:
             os.environ["PATH"] += f":{venv_bin}"
+
+    @staticmethod
+    def addVenvToPythonPath():
+        venv = Path(".venv/lib/python3.11/site-packages").resolve()
+        if str(venv) not in sys.path:
+            sys.path.append(str(venv))
 
     @staticmethod
     def UninstallHook():
