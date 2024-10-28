@@ -14,8 +14,10 @@ And you want:
 
 - To develop a Rust extension with Python bindings usable in TD
 - Have it automatically *rebuild* and *reload* when you re-init your TD extensions, scripts, etc
-  
-Then follow these steps:
+
+This COMP sets that up for you!
+
+## Usage
 
 - With the venv activated run `pip install maturin maturin-import-hook`
   - This installs [maturin](https://www.maturin.rs/) (the pyo3 build tool) and [maturin-import-hook](https://github.com/PyO3/maturin-import-hook)
